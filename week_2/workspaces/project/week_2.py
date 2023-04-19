@@ -16,25 +16,29 @@ from workspaces.resources import mock_s3_resource, redis_resource, s3_resource
 from workspaces.types import Aggregation, Stock
 
 
+@op(required_resource_keys={"s3"},
+    config_schema={"s3_key": String})
+def get_s3_data(context: OpExecutionContext) -> List[Stock]:
+    s3_key = context.op_config['s3_key']
+    stock = [Stock.from_list(stock) for stock in context.resources.s3.get_data(s3_key)]
+    return stocks
+
+
 @op
-def get_s3_data():
+def process_data(context: OpExecutionContext, stocks: List[Stock]) -> Aggregation:
+    sorted_stocks = sorted(stocks, key=lambda s: s.high, reverse=True)
+    max_stock = sorted_stocks[0]
+    return Aggregation(date=max_stock.date, high=max_stock.high)
+
+
+@op
+def put_redis_data(context: OpExecutionContext, aggregation: Aggregation):
     pass
 
 
 @op
-def process_data():
+def put_s3_data(context: OpExecutionContext, aggregation: Aggregation):
     pass
-
-
-@op
-def put_redis_data():
-    pass
-
-
-@op
-def put_s3_data():
-    pass
-
 
 @graph
 def machine_learning_graph():
