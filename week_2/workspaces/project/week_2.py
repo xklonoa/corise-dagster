@@ -20,7 +20,7 @@ from workspaces.types import Aggregation, Stock
     config_schema={"s3_key": String})
 def get_s3_data(context: OpExecutionContext) -> List[Stock]:
     s3_key = context.op_config['s3_key']
-    stock = [Stock.from_list(stock) for stock in context.resources.s3.get_data(s3_key)]
+    stocks = [Stock.from_list(stock) for stock in context.resources.s3.get_data(s3_key)]
     return stocks
 
 
@@ -36,9 +36,9 @@ def put_redis_data(context: OpExecutionContext, aggregation: Aggregation):
     pass
 
 
-@op
-def put_s3_data(context: OpExecutionContext, aggregation: Aggregation):
-    pass
+@op(out=Out (dagster_type=Nothing))
+def put_s3_data(context: OpExecutionContext, aggregation: Aggregation) -> Nothing:
+    yield Output(Nothing)
 
 @graph
 def machine_learning_graph():
