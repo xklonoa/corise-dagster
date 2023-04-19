@@ -36,10 +36,9 @@ def put_redis_data(context: OpExecutionContext, aggregation: Aggregation) -> Not
     context.resources.redis.put_data(name=aggregation.date.strftime("%y%m%d"), value=str(aggregation.high))
 
 
-@op()
+@op(required_resource_keys={"s3"})
 def put_s3_data(context: OpExecutionContext, aggregation: Aggregation) -> Nothing:
-    context.resources.redis.put_data(name=(aggregation.date.strtime), value=str(aggregation.high))
-    yield Output(Nothing)
+    context.resources.s3.put_data(key_name=aggregation.date.strftime("%y%m%d"), data=aggregation)
 
 @graph
 def machine_learning_graph():
