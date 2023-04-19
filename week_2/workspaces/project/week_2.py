@@ -31,13 +31,14 @@ def process_data(context: OpExecutionContext, stocks: List[Stock]) -> Aggregatio
     return Aggregation(date=max_stock.date, high=max_stock.high)
 
 
-@op
-def put_redis_data(context: OpExecutionContext, aggregation: Aggregation):
-    pass
+@op(required_resource_keys={"redis"})
+def put_redis_data(context: OpExecutionContext, aggregation: Aggregation) -> Nothing:
+    context.resources.redis.put_data(name=aggregation.date.strftime("%y%m%d"), value=str(aggregation.high))
 
 
-@op(out=Out (dagster_type=Nothing))
+@op()
 def put_s3_data(context: OpExecutionContext, aggregation: Aggregation) -> Nothing:
+    context.resources.redis.put_data(name=(aggregation.date.strtime), value=str(aggregation.high))
     yield Output(Nothing)
 
 @graph
