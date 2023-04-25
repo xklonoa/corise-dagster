@@ -89,7 +89,7 @@ machine_learning_job_local = machine_learning_graph.to_job(
 
 machine_learning_job_docker = machine_learning_graph.to_job(
     name="machine_learning_job_docker",
-    config=docker_docker,
+    config=docker_config,
     resource_defs={'s3': s3_resource, 'redis': redis_resource},
     op_retry_policy=RetryPolicy(max_retries=10,  delay=1)
 )
